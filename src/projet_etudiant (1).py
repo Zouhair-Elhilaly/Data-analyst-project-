@@ -13,8 +13,99 @@ ALPHA = 0.05
 # %% PARTIE 0 : chargement et nettoyage (2 pts)
 df = pd.read_csv("donnees_projet.csv")
 # TODO 0.1 : dimensions, types, valeurs manquantes par variable
+
+print("Dimensions :", df.shape)
+
+print("\nTypes des variables :")
+print(df.dtypes)
+
+print("\nValeurs manquantes :")
+print(df.isnull().sum())
+
+print("\nInformations générales :")
+df.info()
+
+
+
+
+
+
+
+
 # TODO 0.2 : repérer une valeur aberrante dans heures_etude (describe, boxplot). Que faites-vous ? Justifiez.
+
+
+print("\nStatistiques de heures_etude :")
+print(df["heures_etude"].describe())
+
+Q1 = df["heures_etude"].quantile(0.25)
+Q3 = df["heures_etude"].quantile(0.75)
+
+IQR = Q3 - Q1
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+outliers = df[
+    (df["heures_etude"] < lower) |
+    (df["heures_etude"] > upper)
+]
+
+print("\nLimite inférieure :", lower)
+print("Limite supérieure :", upper)
+print("\nValeurs aberrantes :")
+print(outliers[["id", "heures_etude"]])
+
+plt.figure(figsize=(8, 4))
+sns.boxplot(x=df["heures_etude"])
+plt.title("Boxplot des heures d'étude")
+plt.xlabel("Heures d'étude par semaine")
+plt.tight_layout()
+plt.savefig(
+    r"..\results\boxplot_heures_etude_main.png",
+    dpi=300,
+    bbox_inches="tight"
+)
+
+plt.show()
+
+print("\nExclure l'observation ID = 18 de l'analyse de régression, sans modifier sa valeur originale dans le dataset.")
+
 # TODO 0.3 : construire le tableau d'analyse "d" sans valeurs manquantes sur les variables utilisées
+
+
+# Variables utilisees dans le projet
+variables_utilisees = [
+    "filiere",
+    "sexe",
+    "logement",
+    "assiduite",
+    "moyenne_bac",
+    "heures_etude",
+    "heures_sommeil",
+    "note_stat",
+    "reussite"
+]
+
+# Construction du tableau sans valeurs manquantes
+d = df.dropna(
+    subset=variables_utilisees
+).copy()
+
+# Verification
+print("\nDimensions du tableau initial :", df.shape)
+print("Dimensions du tableau d'analyse :", d.shape)
+
+print("\nValeurs manquantes dans d :")
+print(d[variables_utilisees].isnull().sum())
+
+print("\nNombre d'observations supprimees :",
+      len(df) - len(d))
+
+# Verification finale
+assert d[variables_utilisees].isnull().sum().sum() == 0
+
+print("\nTableau d'analyse construit avec succes.")
+
 
 # %% PARTIE 1 : analyse descriptive (2 pts)
 # TODO 1.1 : moyenne, écart-type, min, max de moyenne_bac, heures_etude, note_stat

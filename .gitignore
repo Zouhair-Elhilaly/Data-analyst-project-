@@ -60,6 +60,9 @@ cover/
 *.mo
 *.pot
 
+# files txt
+text rapport.txt
+
 # Django stuff:
 *.log
 local_settings.py
